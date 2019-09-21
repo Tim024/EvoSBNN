@@ -2,6 +2,7 @@ import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from Hyperparams import *
 
 
 def load_MNIST():
@@ -24,7 +25,7 @@ def load_MNIST():
     print("Test set shape", X_test.shape, Y_test.shape)
     print("Train set shape", X_train.shape, Y_train.shape)
 
-    return X_train, Y_train, X_test, Y_test
+    return np.array(X_train,dtype=DTYPE), np.array(Y_train,dtype=DTYPE), np.array(X_test,dtype=DTYPE), np.array(Y_test,dtype=DTYPE)
 
 
 if __name__ == '__main__':
