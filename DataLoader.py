@@ -3,7 +3,8 @@ import scipy.io as sio
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-def load_MNIST(only_half=False):
+
+def load_MNIST():
     print("Loading MNIST...")
     mat = sio.loadmat('./data/mnist.mat')
     num_classes = 10
@@ -20,21 +21,14 @@ def load_MNIST(only_half=False):
     Y_test = np.array(
         [[1 if i == mat['testY'][0][c] else 0 for i in range(num_classes)] for c in range(len(mat['testY'][0]))])
 
-    if (only_half):
-        X_train = X_train[:int(len(X_train)/2)]
-        Y_train = Y_train[:int(len(Y_train)/2)]
-        X_test = X_test[:int(len(X_test)/2)]
-        Y_test = Y_test[:int(len(Y_test)/2)]
-
     print("Test set shape", X_test.shape, Y_test.shape)
     print("Train set shape", X_train.shape, Y_train.shape)
 
-    return X_train,Y_train,X_test,Y_test
+    return X_train, Y_train, X_test, Y_test
 
 
 if __name__ == '__main__':
-
-    X_train,Y_train,_,_ = load_MNIST()
+    X_train, Y_train, _, _ = load_MNIST()
 
     # Show example:
     r = np.random.randint(0, len(X_train))
