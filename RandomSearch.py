@@ -16,8 +16,8 @@ if __name__ == '__main__':
     num_classes = 10
 
     t1 = time.time()
-    #output = SBNN.forward_naive(X_train[:batch_size]) # 5 minutes with DTYPE = uint16, 3.4 minutes with DTYPE = bool ,optimized 0.37 minutes
-    output = SBNN.forward_pytorch(X_train[:batch_size]) #
+    # output = SBNN.forward_naive(X_train[:batch_size]) # 5 minutes with DTYPE = uint16, 3.4 minutes with DTYPE = bool ,optimized 0.37 minutes
+    output = SBNN.forward_pytorch(X_train[:batch_size])  #
     t2 = time.time()
     correct_guesses = np.sum(np.bitwise_and(output, Y_train[:batch_size]))
 
@@ -25,4 +25,4 @@ if __name__ == '__main__':
     print('Training accuracy', 100 * correct_guesses / (batch_size * num_classes), '%')
     print('Time elapsed', t2 - t1, 'second')
     print('Time per element', (t2 - t1) / batch_size)
-    print('Time required for the full training+testing set',70000*(t2 - t1) / (batch_size),'seconds')
+    print('Time required for the full training+testing set', 70000 * (t2 - t1) / (batch_size), 'seconds')

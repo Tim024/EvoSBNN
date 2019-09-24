@@ -25,7 +25,8 @@ def load_MNIST():
     print("Test set shape", X_test.shape, Y_test.shape)
     print("Train set shape", X_train.shape, Y_train.shape)
 
-    return np.array(X_train,dtype=DTYPE), np.array(Y_train,dtype=DTYPE), np.array(X_test,dtype=DTYPE), np.array(Y_test,dtype=DTYPE)
+    return np.array(X_train, dtype=DTYPE), np.array(Y_train, dtype=DTYPE), np.array(X_test, dtype=DTYPE), np.array(
+        Y_test, dtype=DTYPE)
 
 
 if __name__ == '__main__':

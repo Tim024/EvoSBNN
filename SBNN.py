@@ -4,7 +4,7 @@ from Hyperparams import *
 
 
 class SparseBinaryLayer_TEST:
-    def __init__(self, input_size, output_size, density=0.1):
+    def __init__(self, input_size, output_size, density=0.05):
 
         # Initialize a sparse weight layer completely randomly
         self.weights = np.array(np.zeros((output_size, input_size)),
@@ -16,7 +16,12 @@ class SparseBinaryLayer_TEST:
                 if r < density:
                     self.weights[y, x] = 1
 
-        self.weights_GPU = torch.FloatTensor(self.weights).to(DEVICE)
+        self.weights_GPU = create_tensor(self.weights).to(DEVICE)
+
+        # indices = torch.nonzero(torch.FloatTensor(self.weights).t()).t()
+        # values =  self.weights[indices[1], indices[0]]  # modify this based on dimensionality
+        # self.weights_GPU_sparse = torch.sparse_coo_tensor(indices=indices, values=values, size=(input_size,output_size), dtype=DTYPEP, device=DEVICE)
+        # self.weights_GPU_sparse = self.weights_GPU.to_sparse()
 
     def forward_naive(self, input_batch):
         # TODO this is clearly too slow...
@@ -31,13 +36,19 @@ class SparseBinaryLayer_TEST:
         return np.array(output_batch)
 
     def forward_optimized(self, input_batch):
-        output = np.matmul(input_batch,self.weights.T)
-        output[output < 3] = 0 # Same activation as before
+        output = np.matmul(input_batch, self.weights.T)
+        output[output < 3] = 0  # Same activation as before
         output[output > 2] = 1
         return output
 
-    def forward_pytorch(self,input_batch):
-        output = torch.matmul(input_batch,self.weights_GPU.t())
+    def forward_pytorch(self, input_batch):
+        output = torch.matmul(input_batch, self.weights_GPU.t())
+        output[output < 3] = 0  # Same activation as before
+        output[output > 2] = 1
+        return output
+
+    def forward_pytorch_sparse(self, input_batch):
+        output = torch.sparse.mm(input_batch, self.weights_GPU.t())  # Only works for matmul sparse x dense
         output[output < 3] = 0  # Same activation as before
         output[output > 2] = 1
         return output
@@ -57,10 +68,17 @@ class SparseBinaryNeuralNetwork_TEST:
 
     def forward_pytorch(self, input):
         # print(input)
-        input = torch.FloatTensor(input).to(DEVICE)
+        input = create_tensor(input).to(DEVICE)
         o = self.l1.forward_pytorch(input)
         o = self.l2.forward_pytorch(o)
         o = self.l3.forward_pytorch(o)
+        return o
+
+    def forward_pytorch_sparse(self, input):
+        input = create_tensor(input).to(DEVICE).to_sparse()
+        o = self.l1.forward_pytorch_sparse(input).to_sparse()
+        o = self.l2.forward_pytorch_sparse(o).to_sparse()
+        o = self.l3.forward_pytorch_sparse(o)
         return o
 
 
@@ -70,4 +88,8 @@ if __name__ == '__main__':
     input = np.array([[True, True, True, True, True], [False, False, False, False, False]])
     print(SL.forward_naive(input))
     print(SL.forward_optimized(input))
-    print(SL.forward_pytorch(torch.FloatTensor(input).to(DEVICE)))
+    # Convert input to tensor
+    print(SL.forward_pytorch(create_tensor(input).to(DEVICE)))
+    # Convert input to sparse
+    input = create_tensor(input).to(DEVICE)
+    print(SL.forward_pytorch_sparse(input.to_sparse()))
