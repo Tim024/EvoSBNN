@@ -7,7 +7,7 @@ from Hyperparams import *
 
 def load_MNIST():
     print("Loading MNIST...")
-    mat = sio.loadmat('./data/mnist.mat')
+    mat = sio.loadmat('../data/mnist.mat')
     num_classes = 10
     # Binarize data
     X_train = mat['trainX'] / 254
