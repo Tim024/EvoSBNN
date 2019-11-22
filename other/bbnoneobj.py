@@ -53,7 +53,7 @@ total_length = SBNN.getLength()
 
 X_train, Y_train, X_test, Y_test = load_MNIST()
 
-batch_size = 512
+batch_size = 2048
 num_classes = 10
 
 # Attribute generator 
@@ -97,11 +97,12 @@ def evalOneMax(individual):
 toolbox.register("evaluate", evalOneMax)
 
 # register the crossover operator
-toolbox.register("mate", tools.cxTwoPoint)
+#toolbox.register("mate", tools.cxTwoPoint)
+toolbox.register("mate", tools.cxUniform)
 
 # register a mutation operator with a probability to
 # flip each attribute/gene of 0.05
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
+toolbox.register("mutate", tools.mutFlipBit, indpb=1/total_length)
 
 # operator for selecting individuals for breeding the next
 # generation: each individual of the current generation
@@ -117,13 +118,13 @@ def main():
 
     # create an initial population of 300 individuals (where
     # each individual is a list of integers)
-    pop = toolbox.population(n=30)
+    pop = toolbox.population(n=50)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 0.5, 0.2
+    CXPB, MUTPB = 0.5, 1
     
     print("Start of evolution")
     
@@ -141,7 +142,7 @@ def main():
     g = 0
     
     # Begin the evolution
-    while max(fits) < 100 and g < 1000:
+    while max(fits) < 1 and g < 1000:
         # A new generation
         g = g + 1
         print("-- Generation %i --" % g)
@@ -156,7 +157,7 @@ def main():
 
             # cross two individuals with probability CXPB
             if random.random() < CXPB:
-                toolbox.mate(child1, child2)
+                toolbox.mate(child1, child2,0.5)
 
                 # fitness values of the children
                 # must be recalculated later

@@ -161,6 +161,37 @@ class SparseBinaryNeuralNetwork_TEST:
         self.l3.weights_to_GPU()
 
 
+class BNNANIL:
+    def __init__(self, input_size, hidden_size, output_size):
+        self.l1 = SparseBinaryLayer_TEST(input_size, hidden_size)
+        self.l2 = SparseBinaryLayer_TEST(hidden_size, output_size)
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+
+    def forward_pytorch(self, input):
+        # print(input)
+        input = create_tensor(input).to(DEVICE)
+        o = self.l1.forward_pytorch(input, threshold=10) #784 -> 100
+        o = self.l2.forward_pytorch(o, threshold=None)
+        return o
+
+    def getLength(self):
+        total_size = self.input_size * self.hidden_size + self.hidden_size * self.output_size
+        return total_size
+
+    def setWeights(self,all_weights):
+        all_weights = np.array(all_weights)
+        l1,l2 = all_weights[:self.input_size * self.hidden_size],\
+                   all_weights[self.input_size * self.hidden_size:]
+        l1 = np.reshape(l1,(self.hidden_size,self.input_size))
+        l2 = np.reshape(l2,(self.output_size,self.hidden_size))
+        self.l1.weights = l1
+        self.l1.weights_to_GPU()
+        self.l2.weights = l2
+        self.l2.weights_to_GPU()
+
+
 
 
 if __name__ == '__main__':
