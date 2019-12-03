@@ -50,10 +50,14 @@ output_size = 10
 SBNN = SparseBinaryNeuralNetwork_TEST(input_size, hidden_size, output_size)
 
 total_length = SBNN.getLength()
+print('SBNN length',total_length)
 
 X_train, Y_train, X_test, Y_test = load_MNIST()
 
-batch_size = 512
+# print(np.mean(Y_train[:2048],axis=0))
+# exit(1)
+
+batch_size = 2048
 num_classes = 10
 
 # Attribute generator 
@@ -78,7 +82,7 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 # the goal ('fitness') function to be maximized
 def evalOneMax(individual):
 
-    # print(np.sum(individual)/total_length)
+    print(np.sum(individual)/total_length)
 
     SBNN.setWeights(individual)
     output = SBNN.forward_pytorch(X_train[:batch_size])
@@ -101,7 +105,7 @@ toolbox.register("mate", tools.cxTwoPoint)
 
 # register a mutation operator with a probability to
 # flip each attribute/gene of 0.05
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
+toolbox.register("mutate", tools.mutFlipBit, indpb=0.005)
 
 # operator for selecting individuals for breeding the next
 # generation: each individual of the current generation
@@ -117,13 +121,13 @@ def main():
 
     # create an initial population of 300 individuals (where
     # each individual is a list of integers)
-    pop = toolbox.population(n=30)
+    pop = toolbox.population(n=20)
 
     # CXPB  is the probability with which two individuals
     #       are crossed
     #
     # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 0.5, 0.2
+    CXPB, MUTPB = 0.2, 0.8
     
     print("Start of evolution")
     
