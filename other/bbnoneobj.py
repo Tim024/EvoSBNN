@@ -53,7 +53,6 @@ total_length = SBNN.getLength()
 print('SBNN length',total_length)
 
 X_train, Y_train, X_test, Y_test = load_MNIST()
-
 # print(np.mean(Y_train[:2048],axis=0))
 # exit(1)
 
@@ -101,11 +100,12 @@ def evalOneMax(individual):
 toolbox.register("evaluate", evalOneMax)
 
 # register the crossover operator
-toolbox.register("mate", tools.cxTwoPoint)
+#toolbox.register("mate", tools.cxTwoPoint)
+toolbox.register("mate", tools.cxUniform)
 
 # register a mutation operator with a probability to
 # flip each attribute/gene of 0.05
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.005)
+toolbox.register("mutate", tools.mutFlipBit, indpb=1/total_length)
 
 # operator for selecting individuals for breeding the next
 # generation: each individual of the current generation
@@ -145,7 +145,7 @@ def main():
     g = 0
     
     # Begin the evolution
-    while max(fits) < 100 and g < 1000:
+    while max(fits) < 1 and g < 1000:
         # A new generation
         g = g + 1
         print("-- Generation %i --" % g)
@@ -160,7 +160,7 @@ def main():
 
             # cross two individuals with probability CXPB
             if random.random() < CXPB:
-                toolbox.mate(child1, child2)
+                toolbox.mate(child1, child2,0.5)
 
                 # fitness values of the children
                 # must be recalculated later
